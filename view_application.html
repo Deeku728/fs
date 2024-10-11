@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status - Digital E Gram Panchayat</title>
+    <link rel="stylesheet" href="../static/port.css">
+
+    <style>
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-verify {
+            background-color: green;
+        }
+
+        .btn-not-verify {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Application Status</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Application Type</th>
+                    <th>Application Number</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="statusDisplay"></tbody>
+            <a href="../templates/staff.html"> <button class="back-button">Back</button></a>
+        </table>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVwyQ6nlGzFcO9DMYGWRADLeGjCFxqOl0",
+            authDomain: "e-gram-2da6d.firebaseapp.com",
+            projectId: "e-gram-2da6d",
+            storageBucket: "e-gram-2da6d.appspot.com",
+            messagingSenderId: "406178850869",
+            appId: "1:406178850869:web:cbecc9674508f7909be97c",
+            databaseURL: "https://e-gram-2da6d-default-rtdb.firebaseio.com/",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        const userId = "USER_ID";
+
+        const statusRef = ref(database, 'applications/' + userId);
+        get(statusRef).then((snapshot) => {
+            const statusDisplay = document.getElementById('statusDisplay');
+
+            if (snapshot.exists()) {
+                const applications = snapshot.val();
+                let applicationsHtml = '';
+
+
+                for (const applicationType in applications) {
+                    const applicationData = applications[applicationType];
+
+                    for (const applicationId in applicationData) {
+                        const applicationDetails = applicationData[applicationId];
+                        const applicationNumber = applicationDetails.applicationNumber || 'N/A';
+                        const status = applicationDetails.status || 'N/A';
+
+                        applicationsHtml += `
+                            <tr>
+                                <td>${applicationType.replace(/([A-Z])/g, ' $1')}</td>
+                                <td>
+                                    <a href="application.html?applicationId=${applicationId}&applicationType=${applicationType}" target="_blank">
+                                        ${applicationNumber}
+                                    </a>
+                                </td>
+                                <td id="status-${applicationId}">${status}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-verify" onclick="updateStatus('${applicationId}', '${applicationType}', 'Verified')">Verify</button>
+                                        <button class="btn btn-not-verify" onclick="updateStatus('${applicationId}', '${applicationType}', 'Not Verified')">Not Verified</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                }
+
+                statusDisplay.innerHTML = applicationsHtml;
+            } else {
+                statusDisplay.innerHTML = '<tr><td colspan="4">No applications found.</td></tr>';
+            }
+        }).catch((error) => {
+            console.error("Error fetching application status: ", error);
+        });
+
+
+        window.updateStatus = function (applicationId, applicationType, newStatus) {
+            const applicationRef = ref(database, `applications/${userId}/${applicationType}/${applicationId}`);
+
+
+            update(applicationRef, { status: newStatus })
+                .then(() => {
+
+                    document.getElementById(`status-${applicationId}`).innerText = newStatus;
+                })
+                .catch((error) => {
+                    console.error("Error updating application status: ", error);
+                });
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marriage Registration - Digital E Gram Panchayat</title>
+    <link rel="stylesheet" href="../static/port.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Marriage Registration</h2>
+        <form id="marriageForm">
+            <label for="brideName">Bride's Name</label>
+            <input type="text" id="brideName" required placeholder="Enter bride's name">
+
+            <label for="groomName">Groom's Name</label>
+            <input type="text" id="groomName" required placeholder="Enter groom's name">
+
+            <label for="brideAge">Bride's Age</label>
+            <input type="number" id="brideAge" required placeholder="Enter bride's age">
+
+            <label for="groomAge">Groom's Age</label>
+            <input type="number" id="groomAge" required placeholder="Enter groom's age">
+
+            <label for="marriageDate">Date of Marriage</label>
+            <input type="date" id="marriageDate" required>
+
+            <label for="location">Marriage Location</label>
+            <input type="text" id="location" required placeholder="Enter location of marriage">
+
+            <label for="additionalInfo">Additional Information</label>
+            <textarea id="additionalInfo" placeholder="Enter any additional information"></textarea>
+
+            <button type="submit">Submit Registration</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
+
+      
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVwyQ6nlGzFcO9DMYGWRADLeGjCFxqOl0",
+            authDomain: "e-gram-2da6d.firebaseapp.com",
+            projectId: "e-gram-2da6d",
+            storageBucket: "e-gram-2da6d.appspot.com",
+            messagingSenderId: "406178850869",
+            appId: "1:406178850869:web:cbecc9674508f7909be97c",
+            databaseURL: "https://e-gram-2da6d-default-rtdb.firebaseio.com/", 
+        };
+
+     
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        document.getElementById('marriageForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const brideName = document.getElementById('brideName').value;
+            const groomName = document.getElementById('groomName').value;
+            const brideAge = document.getElementById('brideAge').value;
+            const groomAge = document.getElementById('groomAge').value;
+            const marriageDate = document.getElementById('marriageDate').value;
+            const location = document.getElementById('location').value;
+            const additionalInfo = document.getElementById('additionalInfo').value;
+            const userId = "USER_ID"; 
+            const applicationNumber = generateApplicationNumber(); 
+
+           
+            const marriageRef = ref(database, 'applications/' + userId + '/MarriageCertificate/'+applicationNumber);
+            set(marriageRef, {
+                brideName: brideName,
+                groomName: groomName,
+                brideAge: brideAge,
+                groomAge: groomAge,
+                marriageDate: marriageDate,
+                location: location,
+                additionalInfo: additionalInfo,
+                status:'submitted',
+                applicationNumber: applicationNumber
+                
+             
+            })
+            .then(() => {
+                alert('Marriage registration submitted successfully !Your application number is: ' + applicationNumber);
+
+                window.location.href = `status.html?applicationNumber=${applicationNumber}`;
+            })
+            .catch((error) => {
+                alert('Failed to submit registration: ' + error.message);
+            });
+            
+            function generateApplicationNumber() {
+                return 'APP-' + Date.now();
+            }
+        });
+    </script>
+</body>
+
+</html>

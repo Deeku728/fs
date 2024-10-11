@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status - Digital E Gram Panchayat</title>
+    <link rel="stylesheet" href="../static/port.css">
+
+    <style>
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Application Status</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Application Type</th>
+                    <th>Application Number</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="statusDisplay"></tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVwyQ6nlGzFcO9DMYGWRADLeGjCFxqOl0",
+            authDomain: "e-gram-2da6d.firebaseapp.com",
+            projectId: "e-gram-2da6d",
+            storageBucket: "e-gram-2da6d.appspot.com",
+            messagingSenderId: "406178850869",
+            appId: "1:406178850869:web:cbecc9674508f7909be97c",
+            databaseURL: "https://e-gram-2da6d-default-rtdb.firebaseio.com/",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        const userId = "USER_ID";
+
+
+
+        const statusRef = ref(database, 'applications/' + userId);
+        get(statusRef).then((snapshot) => {
+            const statusDisplay = document.getElementById('statusDisplay');
+
+            if (snapshot.exists()) {
+                const applications = snapshot.val();
+                let applicationsHtml = '';
+
+
+                for (const applicationType in applications) {
+                    const applicationData = applications[applicationType];
+
+
+                    for (const applicationId in applicationData) {
+                        const applicationDetails = applicationData[applicationId];
+                        applicationsHtml += `
+                    <tr>
+                        <td>${applicationType.replace(/([A-Z])/g, ' $1')}</td>
+                        <td>${applicationDetails.applicationNumber || 'N/A'}</td>
+                        <td>${applicationDetails.status || 'N/A'}</td>
+                    </tr>
+                `;
+                    }
+                }
+
+                statusDisplay.innerHTML = applicationsHtml;
+            } else {
+                statusDisplay.innerHTML = '<tr><td colspan="3">No applications found.</td></tr>';
+            }
+        }).catch((error) => {
+            console.error("Error fetching application status: ", error);
+        });
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EWS Certificate Application - Digital E Gram Panchayat</title>
+    <link rel="stylesheet" href="../static/port.css">
+   
+    <style>
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f8ff;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #0056b3;
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+    height: 100px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0056b3;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #004099;
+}
+
+
+
+        </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>EWS Certificate Application</h2>
+        <form id="ewsForm">
+            <label for="applicantName">Applicant's Name</label>
+            <input type="text" id="applicantName" required placeholder="Enter your name">
+
+            <label for="annualIncome">Annual Income</label>
+            <input type="number" id="annualIncome" required placeholder="Enter your annual income">
+
+            <label for="familyMembers">Number of Family Members</label>
+            <input type="number" id="familyMembers" required placeholder="Enter number of family members">
+
+            <label for="address">Address</label>
+            <textarea id="address" required placeholder="Enter your address"></textarea>
+
+            <button type="submit">Submit Application</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
+
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCVwyQ6nlGzFcO9DMYGWRADLeGjCFxqOl0",
+            authDomain: "e-gram-2da6d.firebaseapp.com",
+            projectId: "e-gram-2da6d",
+            storageBucket: "e-gram-2da6d.appspot.com",
+            messagingSenderId: "406178850869",
+            appId: "1:406178850869:web:cbecc9674508f7909be97c",
+            databaseURL: "https://e-gram-2da6d-default-rtdb.firebaseio.com/", 
+};
+
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+document.getElementById('ewsForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const applicantName = document.getElementById('applicantName').value;
+    const annualIncome = document.getElementById('annualIncome').value;
+    const familyMembers = document.getElementById('familyMembers').value;
+    const address = document.getElementById('address').value;
+    const userId = "USER_ID";
+    const applicationNumber = generateApplicationNumber(); 
+
+
+  
+    const ewsRef =  ref(database, 'applications/' + userId + '/EWSCertificate/'+applicationNumber);
+    set(ewsRef, {
+        applicantName: applicantName,
+        annualIncome: annualIncome,
+        familyMembers: familyMembers,
+        address: address,
+        status: 'submitted',
+        applicationNumber: applicationNumber
+    })
+    .then(() => {
+        alert('EWS Certificate application submitted successfully !Your application number is:'  + applicationNumber);
+        
+         window.location.href = `status.html?applicationNumber=${applicationNumber}`;
+    })
+    .catch((error) => {
+        alert('Failed to submit application: ' + error.message);
+    });
+    
+    function generateApplicationNumber() {
+                return 'APP-' + Date.now();
+            }
+});
+
+    </script>
+</body>
+
+</html>

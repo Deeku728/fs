@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Services - Digital E Gram Panchayat</title>
+    <link rel="stylesheet" href="../static/port.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .service-container {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .service-description {
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-size: 1em;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .service-title {
+                font-size: 1.3em;
+            }
+
+            .service-description {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Apply for Services</h2>
+        <div class="service-container" onclick="redirectTo('birth.html')">
+            <div class="service-title" id="Birth Registration">Birth Registration</div>
+            <div class="service-description">Apply for the registration of a birth.</div>
+        </div>
+
+        <div class="service-container" onclick="redirectTo('marriage.html')">
+            <div class="service-title">Marriage Registration</div>
+            <div class="service-description">Apply for the registration of a marriage.</div>
+        </div>
+
+        <div class="service-container" onclick="redirectTo('caste.html')">
+            <div class="service-title">Caste Certificate</div>
+            <div class="service-description">Apply for a caste certificate.</div>
+        </div>
+
+        <div class="service-container" onclick="redirectTo('ews.html')">
+            <div class="service-title">EWS Certificate</div>
+            <div class="service-description">Apply for an Economically Weaker Section certificate.</div>
+        </div>
+
+        <div class="service-container" onclick="redirectTo('income.html')">
+            <div class="service-title">Income Certificate</div>
+            <div class="service-description">Apply for an income certificate.</div>
+        </div>
+
+        <div class="service-container" onclick="redirectTo('death.html')">
+            <div class="service-title">Death Certificate</div>
+            <div class="service-description">Apply for the registration of a death.</div>
+        </div>
+
+        <div class="service-container" onclick="redirectTo('land.html')">
+            <div class="service-title">Land Ownership Certificate</div>
+            <div class="service-description">Apply for a land ownership certificate.</div>
+        </div>
+
+        <div class="service-container" onclick="redirectTo('pension.html')">
+            <div class="service-title">Pension Application</div>
+            <div class="service-description">Apply for a pension.</div>
+        </div>
+    </div>
+
+    <script>
+        function redirectTo(page) {
+            window.location.href = page;
+        }
+        async function generateApplicationNumber() {
+            const counterDoc = await firebase.firestore().collection("counters").doc("applicationCounter").get();
+            const currentCount = counterDoc.exists ? counterDoc.data().count : 0;
+
+
+            await firebase.firestore().collection("counters").doc("applicationCounter").set({
+                count: currentCount + 1
+            });
+
+            return `APP-${currentCount + 1}`;
+        }
+
+    </script>
+</body>
+
+</html>

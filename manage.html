@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Applications</title>
+    <link rel="stylesheet" href="../static/port.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007BFF;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #dddddd;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+
+        .action-button {
+            background-color: #28A745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-button:hover {
+            background-color: #218838;
+        }
+
+        .reject-button {
+            background-color: #DC3545;
+        }
+
+        .reject-button:hover {
+            background-color: #c82333;
+        }
+
+        .disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Manage Applications</h1>
+        <table id="applicationsTable">
+            <thead>
+                <tr>
+                    <th>Application Number</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVwyQ6nlGzFcO9DMYGWRADLeGjCFxqOl0",
+            authDomain: "e-gram-2da6d.firebaseapp.com",
+            projectId: "e-gram-2da6d",
+            storageBucket: "e-gram-2da6d.appspot.com",
+            messagingSenderId: "406178850869",
+            appId: "1:406178850869:web:cbecc9674508f7909be97c",
+            databaseURL: "https://e-gram-2da6d-default-rtdb.firebaseio.com/",
+        };
+
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+
+        const applicationsTable = document.getElementById('applicationsTable').getElementsByTagName('tbody')[0];
+        const applicationsRef = ref(database, 'applications/');
+
+        onValue(applicationsRef, (snapshot) => {
+            applicationsTable.innerHTML = '';
+            snapshot.forEach(userSnapshot => {
+                userSnapshot.forEach(serviceSnapshot => {
+                    serviceSnapshot.forEach(applicationSnapshot => {
+                        const appData = applicationSnapshot.val();
+                        const applicationNumber = appData.applicationNumber;
+
+
+                        const row = applicationsTable.insertRow();
+
+
+                        row.insertCell(0).innerText = applicationNumber;
+
+
+                        const actionsCell = row.insertCell(1);
+                        const approveButton = document.createElement('button');
+                        approveButton.className = 'action-button';
+                        approveButton.innerText = 'Approve';
+                        approveButton.onclick = () => updateApplicationStatus(applicationSnapshot.key, approveButton, 'approved');
+
+                        const rejectButton = document.createElement('button');
+                        rejectButton.className = 'action-button reject-button';
+                        rejectButton.innerText = 'Reject';
+                        rejectButton.onclick = () => updateApplicationStatus(applicationSnapshot.key, rejectButton, 'rejected');
+
+                        actionsCell.appendChild(approveButton);
+                        actionsCell.appendChild(rejectButton);
+                    });
+                });
+            });
+        });
+
+
+        function updateApplicationStatus(applicationKey, button, status) {
+            const applicationRef = ref(database, `applications/${applicationKey}`);
+            update(applicationRef, { status: status })
+                .then(() => {
+
+                    const parentCell = button.parentElement;
+                    const siblingButtons = parentCell.querySelectorAll('button');
+                    siblingButtons.forEach(btn => {
+                        btn.classList.add('disabled');
+                        btn.disabled = true;
+                    });
+
+
+                    button.innerText = status.charAt(0).toUpperCase() + status.slice(1);
+                    button.style.backgroundColor = status === 'approved' ? '#28A745' : '#DC3545';
+                })
+                .catch((error) => {
+                    alert(`Failed to update status: ${error.message}`);
+                });
+        }
+    </script>
+</body>
+
+</html>
