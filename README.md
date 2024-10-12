@@ -94,7 +94,7 @@ Copy code
 }
 Make sure to adjust these rules according to your application's security needs.
 
-6. Ensure that you install any necessary dependencies to read environment variables (if using Node.js, for example).
+
 
 ## Usage
 
