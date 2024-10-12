@@ -93,6 +93,37 @@ Copy code
   }
 }
 Make sure to adjust these rules according to your application's security needs.
+To implement Admin and Staff login functionality using Firebase's Realtime Database for your Digital E Gram Panchayat project, you can follow these steps. Firebase Authentication will handle user logins, and the Realtime Database will store user roles (Admin or Staff) to differentiate access levels.
+
+1. Set up Firebase Authentication
+Firebase Authentication will manage user logins, while the Realtime Database will manage user roles.
+
+Steps:
+Go to your Firebase console.
+Enable Email/Password Authentication in the Authentication section.
+2. Set Up Realtime Database for Roles
+You’ll use Firebase's Realtime Database to store and manage user roles (Admin or Staff).
+
+Database Structure Example:
+json
+Copy code
+{
+  "users": {
+    "userID1": {
+      "email": "admin@example.com",
+      "role": "admin"
+    },
+    "userID2": {
+      "email": "staff@example.com",
+      "role": "staff"
+    },
+    "userID3": {
+      "email": "user@example.com",
+      "role": "user"
+    }
+  }
+}
+Each user in the database will have a role field that determines whether they are an admin, staff, or a regular user.
 
 
 
