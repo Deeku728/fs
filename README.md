@@ -40,6 +40,10 @@ To run this project locally, follow these steps:
 2. Apply for any service from the user portal.
 3. Track the status of your application on the status page.
 4. Admins can log in to manage applications and approve them.
+5. users can login with the process of register with email and password.
+6. staff portal can be accessed by the members of staff only. so for that authenticated user id must be used means a user need to authenticate the email and password from realtime database manaually.
+7. admin portal can be accessed by the admin only. so for that authenticated user id must be used means a user need to authenticate the email and password from realtime database manaually.
+ 
 
 ## Services
 
@@ -76,6 +80,19 @@ The following services are currently available:
     FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
     FIREBASE_APP_ID=your_app_id
     ```
+
+6. Review Firebase Rules
+Check your Firebase Realtime Database security rules. If the rules are too restrictive, they might be preventing the read operation. Ensure that the rules allow read access to the relevant data paths for authenticated users.
+Example of a permissive rule (for testing only):
+json
+Copy code
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
+Make sure to adjust these rules according to your application's security needs.
 
 6. Ensure that you install any necessary dependencies to read environment variables (if using Node.js, for example).
 
