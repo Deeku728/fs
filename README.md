@@ -22,7 +22,7 @@ To run this project locally, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/digital-e-gram-panchayat.git
+    git clone https://github.com/yourusername/fs.git
     ```
 
 2. Navigate to the project directory:
